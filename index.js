@@ -113,3 +113,19 @@ app.put('/tips/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.delete('/tips/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await tipsCollection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) return res.status(404).json({ error: 'Tip not found' });
+    res.json({ message: 'Tip deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.listen(port, () => {
+  console.log(`Users server is running on port ${port}`);
+});
