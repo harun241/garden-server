@@ -9,10 +9,9 @@ const cors = require('cors');
 app.use(express.json());
 app.use(cors());
 
-// MongoDB URI
+// MongoDB URI and Client
 const uri = `mongodb+srv://${process.env.DB_User}:${process.env.DB_Pass}@rjdvhav.mongodb.net/?retryWrites=true&w=majority&appName=hash`;
 
-// MongoClient config
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -40,11 +39,12 @@ async function run() {
 }
 run().catch(console.dir);
 
-
+// Basic route
 app.get('/', (req, res) => {
   res.send('🌿 Gardening community server is running');
 });
 
+// Active gardeners
 app.get('/gardeners/active', async (req, res) => {
   try {
     const activeGardeners = await gardenersCollection
@@ -59,6 +59,7 @@ app.get('/gardeners/active', async (req, res) => {
   }
 });
 
+// Trending tips
 app.get('/trending/tips', async (req, res) => {
   try {
     const trendingTips = await trendingTipsCollection
@@ -73,6 +74,7 @@ app.get('/trending/tips', async (req, res) => {
   }
 });
 
+// Add a new tip
 app.post('/api/garden-tips', async (req, res) => {
   try {
     const tip = req.body;
@@ -89,10 +91,12 @@ app.post('/api/garden-tips', async (req, res) => {
   }
 });
 
-
+// Get all tips or filtered by userId
 app.get('/api/garden-tips', async (req, res) => {
   try {
-    const tips = await tipsCollection.find({}).toArray();
+    const userId = req.query.userId;
+    const query = userId ? { userId } : {};
+    const tips = await tipsCollection.find(query).toArray();
     res.json(tips);
   } catch (error) {
     console.error('Error fetching tips:', error);
@@ -100,7 +104,7 @@ app.get('/api/garden-tips', async (req, res) => {
   }
 });
 
-
+// Get single tip details
 app.get('/api/garden-tips/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -120,29 +124,7 @@ app.get('/api/garden-tips/:id', async (req, res) => {
   }
 });
 
-app.patch('/api/garden-tips/:id/like', async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid tip ID' });
-    }
-
-    const result = await tipsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $inc: { totalLiked: 1 } }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: 'Tip not found' });
-    }
-
-    res.json({ message: 'Like updated successfully' });
-  } catch (error) {
-    console.error('Error updating like:', error);
-    res.status(500).json({ message: 'Failed to update like' });
-  }
-});
-
+// Update tip
 app.put('/api/garden-tips/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -160,7 +142,6 @@ app.put('/api/garden-tips/:id', async (req, res) => {
       isPublic,
     } = req.body;
 
-
     const result = await tipsCollection.updateOne(
       { _id: new ObjectId(id) },
       {
@@ -171,7 +152,6 @@ app.put('/api/garden-tips/:id', async (req, res) => {
           description,
           imagesUrl,
           isPublic,
-          
         },
       }
     );
@@ -187,8 +167,62 @@ app.put('/api/garden-tips/:id', async (req, res) => {
   }
 });
 
+// DELETE tip
+app.delete('/api/garden-tips/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
 
-// Start server
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid tip ID' });
+    }
+
+    const result = await tipsCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Tip not found' });
+    }
+
+    res.json({ message: 'Tip deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting tip:', error);
+    res.status(500).json({ message: 'Failed to delete tip' });
+  }
+});
+
+// Like a tip (patch)
+app.patch('/api/garden-tips/:id/like', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid tip ID' });
+    }
+
+    const result = await tipsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $inc: { totalLiked: 1 } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'Tip not found' });
+    }
+
+    res.json({ message: 'Tip liked successfully' });
+  } catch (error) {
+    console.error('Error liking tip:', error);
+    res.status(500).json({ message: 'Failed to like tip' });
+  }
+});
+
+app.get('/gardeners', async (req, res) => {
+  try {
+    const allGardeners = await gardenersCollection.find({}).toArray();
+    res.json(allGardeners);
+  } catch (error) {
+    console.error('Error fetching gardeners:', error);
+    res.status(500).json({ message: 'Failed to fetch gardeners' });
+  }
+});
+
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
