@@ -39,12 +39,10 @@ async function run() {
 }
 run().catch(console.dir);
 
-// Basic route
 app.get('/', (req, res) => {
   res.send('🌿 Gardening community server is running');
 });
 
-// Active gardeners
 app.get('/gardeners/active', async (req, res) => {
   try {
     const activeGardeners = await gardenersCollection
@@ -59,7 +57,7 @@ app.get('/gardeners/active', async (req, res) => {
   }
 });
 
-// Trending tips
+
 app.get('/trending/tips', async (req, res) => {
   try {
     const trendingTips = await trendingTipsCollection
@@ -74,7 +72,7 @@ app.get('/trending/tips', async (req, res) => {
   }
 });
 
-// Add a new tip
+
 app.post('/api/garden-tips', async (req, res) => {
   try {
     const tip = req.body;
@@ -91,7 +89,7 @@ app.post('/api/garden-tips', async (req, res) => {
   }
 });
 
-// Get all tips or filtered by userId
+
 app.get('/api/garden-tips', async (req, res) => {
   try {
     const userId = req.query.userId;
@@ -104,7 +102,6 @@ app.get('/api/garden-tips', async (req, res) => {
   }
 });
 
-// Get single tip details
 app.get('/api/garden-tips/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -124,7 +121,7 @@ app.get('/api/garden-tips/:id', async (req, res) => {
   }
 });
 
-// Update tip
+
 app.put('/api/garden-tips/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -167,7 +164,7 @@ app.put('/api/garden-tips/:id', async (req, res) => {
   }
 });
 
-// DELETE tip
+
 app.delete('/api/garden-tips/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -189,7 +186,7 @@ app.delete('/api/garden-tips/:id', async (req, res) => {
   }
 });
 
-// Like a tip (patch)
+
 app.patch('/api/garden-tips/:id/like', async (req, res) => {
   try {
     const id = req.params.id;
@@ -212,6 +209,7 @@ app.patch('/api/garden-tips/:id/like', async (req, res) => {
     res.status(500).json({ message: 'Failed to like tip' });
   }
 });
+
 
 app.get('/gardeners', async (req, res) => {
   try {
