@@ -1,0 +1,150 @@
+# 🌿 Gardening Community Server
+
+Welcome to the **Gardening Community & Resource Hub** server-side application!  
+This backend powers a full-stack platform where gardeners can share tips, discover trending content, and interact with other enthusiasts.
+
+---
+
+## 🌐 Live Server URL
+
+https://gardening-community-e9b5a.web.app
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ Features
+
+- JWT-based Authentication & Authorization
+- Garden Tip CRUD (Create, Read, Update, Delete)
+- Active Gardeners Tracking
+- Trending Tips Algorithm
+- RESTful API structure
+- MongoDB for data storage
+
+---
+
+## 🚀 Getting Started
+
+### 📦 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/harun241/garden-server.git
+   cd gardening-community-server
+Install dependencies:
+
+bash
+Copy
+Edit
+npm install
+Create a .env file in the root directory and add:
+
+ini
+Copy
+Edit
+PORT=3000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+Run the development server:
+
+bash
+Copy
+Edit
+npm run dev
+🧪 API Endpoints
+👥 Gardeners
+GET /gardeners/active
+→ Returns a list of currently active gardeners.
+Example response:
+
+json
+Copy
+Edit
+[
+  { "username": "roselover", "status": "online" },
+  { "username": "greenthumb" }
+]
+🌿 Garden Tips
+Trending
+GET /trending/tips
+→ Fetch the most popular garden tips based on likes, comments, or views.
+
+CRUD Operations
+GET /api/garden-tips
+→ Retrieve all garden tips from the database.
+
+POST /api/garden-tips (Protected)
+→ Create a new garden tip. Requires authentication.
+
+GET /api/garden-tips/:id
+→ Get a specific garden tip by its ID.
+
+PUT /api/garden-tips/:id (Protected: Author/Admin)
+→ Update an existing garden tip.
+
+DELETE /api/garden-tips/:id (Protected: Author/Admin)
+→ Delete a specific garden tip.
+
+🔐 Authentication
+This server uses JWT (JSON Web Token) to protect private routes.
+Add the token to the Authorization header like:
+
+makefile
+Copy
+Edit
+Authorization: Bearer <your_token>
+🛠️ Technologies Used
+Node.js
+
+Express.js
+
+MongoDB 
+
+JWT Authentication
+
+dotenv for environment configuration
+
+Cors & Middleware for secure API handling
+
+📁 Project Structure
+pgsql
+Copy
+Edit
+gardening-community-server/
+├── controllers/
+├── models/
+├── routes/
+├── middleware/
+├── .env
+├── server.js
+├── package.json
+└── README.md
+🌍 Deployment
+This project is ready to be deployed on platforms like:
+
+Render
+
+Vercel (serverless functions)
+
+Railway
+
+Heroku (if using older stack)
+
+Make sure to add the following environment variables in the deployment dashboard:
+
+MONGODB_URI
+
+JWT_SECRET
+
+📄 License
+This project is licensed under the MIT License.
+Feel free to use, modify, and distribute.
+
+✉️ Contact
+Created by [Harun]
+🔗 LinkedIn
+📧 Email: omdharun6@gmail.com
+🌱 Happy Gardening!
