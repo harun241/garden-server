@@ -7,6 +7,12 @@ const port = process.env.PORT || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 
+console.log("DB User:", process.env.DB_User);
+console.log("DB Pass:", process.env.DB_Pass ? "****" : "Not Set");
+console.log("PORT:", process.env.PORT);
+console.log("API_BASE_URL:", process.env.API_BASE_URL);
+
+
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -25,6 +31,8 @@ const client = new MongoClient(uri, {
 let tipsCollection;
 let gardenersCollection;
 let trendingTipsCollection;
+let itemsCollection;
+
 
 async function run() {
   try {
@@ -33,6 +41,7 @@ async function run() {
     gardenersCollection = gardeningdb.collection('FeaturedGardeners');
     trendingTipsCollection = gardeningdb.collection('TrendingTips');
     tipsCollection = gardeningdb.collection('Tips');
+     itemsCollection = gardeningdb.collection('items'); 
 
     console.log("Connected to MongoDB");
   } catch (error) {
@@ -222,6 +231,51 @@ app.get('/gardeners', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch gardeners' });
   }
 });
+
+
+app.get('/api/all-items', async (req, res) => {
+  try {
+    const items = await itemsCollection.find({}).toArray();
+    res.json(items);
+  } catch (err) {
+    console.error("Error fetching all items:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+app.get('/api/my-items', async (req, res) => {
+  try {
+
+    const items = await itemsCollection.find({}).toArray();
+    res.json(items);
+  } catch (err) {
+    console.error("Error fetching my items:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+
+app.post('/api/add-item', async (req, res) => {
+  try {
+    const itemData = req.body;
+    if (!itemData.name || !itemData.description) {
+      return res.status(400).json({ message: "Name and description are required" });
+    }
+
+    itemData.createdAt = new Date();
+
+    const result = await itemsCollection.insertOne(itemData);
+    res.status(201).json({ message: "Item added", id: result.insertedId });
+  } catch (err) {
+    console.error("Error adding item:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
